@@ -1,8 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '../types/database';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Brakuje zmiennych środowiskowych VITE_SUPABASE_URL i/lub VITE_SUPABASE_ANON_KEY');
+}
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -11,7 +15,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     // Automatyczne odświeżanie tokenów
     autoRefreshToken: true,
     // Przechowuj sesję w localStorage
-    storage: localStorage,
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     // Wykrywaj zmiany sesji w innych kartach
     detectSessionInUrl: true,
   },
